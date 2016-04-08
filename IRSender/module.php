@@ -28,14 +28,32 @@ class GlobalCacheIR extends IPSModule
     
 
     public function ReceiveData($JSONString) {
-	$messages = array();
 	
-        $incomingData = json_decode($JSONString);
-	$incomingBuffer = utf8_decode($incomingData->Buffer);
+	    $incomingData = json_decode($JSONString);
+		$incomingBuffer = utf8_decode($incomingData->Buffer);
 		
-	return true;
+		return true;
     }
+	
+	public function SendCode($Device, $Command) {
+		return true;
+	}
     
+	public function RegisterDevice($Device) {
+		
+	}
+	
+	public function UnregisterDevice($Device) {
+		
+	}
+	
+	public function RegisterCommand($Device, $Command, $IRCode) {
+		
+	}
+	
+	public function UnregisterCommand($Device, $Command) {
+		
+	}
 
     private function Lock($ident)   {
         for ($i = 0; $i < 100; $i++)
