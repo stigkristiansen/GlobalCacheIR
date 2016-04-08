@@ -1,7 +1,5 @@
 <?
 
-
-
 class GlobalCacheIR extends IPSModule
 {
     
@@ -9,7 +7,7 @@ class GlobalCacheIR extends IPSModule
     public function Create()
     {
         parent::Create();
-        $this->RequireParent("{6DC3D946-0D31-450F-A8C6-C42DB8D7D4F1}");
+        $this->RequireParent("{3CFF0FD9-E306-41DB-9B5A-9D06D38576C3}");
         
         $this->RegisterPropertyBoolean ("log", false );
 		
@@ -36,7 +34,7 @@ class GlobalCacheIR extends IPSModule
     }
 	
 	public function SendCode($Device, $Command) {
-		return true;
+		
 	}
     
 	public function RegisterDevice($Device) {
