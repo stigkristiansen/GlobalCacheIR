@@ -39,16 +39,14 @@ class GlobalCacheIR extends IPSModule
     
 	public function RegisterDevice($Device) {
 		$ident = preg_replace("/[^a-zA-Z0-9]+/", "", $Device);
-				
+
 		$cId = 0;
-		
 		$cId = @IPS_GetObjectIDByIdent($ident, $this->InstanceID);
 		if($cId === false) {
 			$cId = IPS_CreateCategory();
 			IPS_SetParent($cId, $this->InstanceID);
 			IPS_SetName($cId, $Device);
 			IPS_SetIdent($cId, $ident);
-			
 		}
 
 		return $cId;
@@ -60,7 +58,10 @@ class GlobalCacheIR extends IPSModule
 		$cId = @IPS_GetObjectIDByIdent($ident, $this->InstanceID);
 		if($cId !== false) {
 			IPS_DeleteCategory($cId);
+			return true;
 		}
+		
+		return false;
 	}
 	
 	public function RegisterCommand($Device, $Command, $IRCode) {
@@ -86,7 +87,21 @@ class GlobalCacheIR extends IPSModule
 	}
 	
 	public function UnregisterCommand($Device, $Command) {
+		$cIdent = preg_replace("/[^a-zA-Z0-9]+/", "", $Device);
+
+		$cId = @IPS_GetObjectIDByIdent($cIdent, $this->InstanceID);
+		if($cId !== false) {
+			$vIdent = preg_replace("/[^a-zA-Z0-9]+/", "", $Command);
+			$vId = @IPS_GetObjectIDByIdent($vIdent, $cId);
+			if($vId !== false) {
+				IPS_DeleteVariable($vId);
+				
+				return true;
+			}
+			return false;
+		}
 		
+		return false;
 	}
 
     private function Lock($ident)   {
