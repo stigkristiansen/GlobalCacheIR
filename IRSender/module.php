@@ -51,7 +51,7 @@ class GlobalCacheIR extends IPSModule
 		$cId = @IPS_GetObjectIDByIdent($Device, $this->InstanceID);
 		if($cId !== false) {
 			IPS_DeleteCategory($cId);
-		]
+		}
 	}
 	
 	public function RegisterCommand($Device, $Command, $IRCode) {
