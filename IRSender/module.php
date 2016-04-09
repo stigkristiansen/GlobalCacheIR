@@ -38,7 +38,7 @@ class GlobalCacheIR extends IPSModule
 	}
     
 	public function RegisterDevice($Device) {
-		$ident = trim($Device);
+		$ident = str_replace(" ", "", $Device);
 		echo $ident;
 		$cId = @IPS_GetObjectIDByIdent($ident, $this->InstanceID);
 		if($cId === false) {
@@ -50,7 +50,7 @@ class GlobalCacheIR extends IPSModule
 	}
 	
 	public function UnregisterDevice($Device) {
-		$ident = trim($Device);
+		$ident = str_replace(" ", "", $Device);
 		$cId = @IPS_GetObjectIDByIdent($ident, $this->InstanceID);
 		if($cId !== false) {
 			IPS_DeleteCategory($cId);
