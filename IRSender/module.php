@@ -78,7 +78,7 @@ class GlobalCacheIR extends IPSModule
 			}
 			
 			if($vId>0) {
-				IPS_SetValueString($vId, $IRCode);
+				SetValueString($vId, $IRCode);
 			}
 		}
 		
