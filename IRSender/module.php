@@ -39,7 +39,7 @@ class GlobalCacheIR extends IPSModule
     
 	public function RegisterDevice($Device) {
 		$cId = @IPS_GetObjectIDByIdent($Device, $this->InstanceID);
-		if($cid === false) {
+		if($cId === false) {
 			$cId = IPS_CreateCategory();
 			IPS_SetParent($cId, $this->InstanceID);
 			IPS_SetName($cId, $Device);
