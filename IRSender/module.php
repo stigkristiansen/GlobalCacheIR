@@ -23,7 +23,12 @@ class GlobalCacheIR extends IPSModule
     
 
     public function ReceiveData($JSONString) {
-	
+		$incomingData = json_decode($JSONString);
+		$incomingBuffer = utf8_decode($incomingData->Buffer);
+		
+		$log = new Logging($this->ReadPropertyBoolean("log"), IPS_Getname($this->InstanceID));
+		$log->LogMessage("Received: ".$incomingBuffer);
+
 		return true;
     }
 	
@@ -84,7 +89,7 @@ class GlobalCacheIR extends IPSModule
 				$log->LogMessage("Unregistered the device: ".$Device);
 				return true;
 			}
-			$log->LogMessage("The device has registred commands: ".$Device." Remove all commands first");
+			$log->LogMessage("The device ".$Device." has registred commands. Remove all commands first");
 			return false;
 		}
 		
@@ -130,11 +135,11 @@ class GlobalCacheIR extends IPSModule
 			if($vId !== false) {
 				IPS_DeleteVariable($vId);
 				
-				$log->LogMessage("The command has been unregistered: ".$Command);
+				$log->LogMessage("The command has been unregistered: ".$Device.":".$Command);
 				return true;
 			}
 			
-			$log->LogMessage("The command does not exists: ".$Command);
+			$log->LogMessage("The command does not exists: ".$Device.":".$Command);
 			return false;
 		}
 		
