@@ -10,18 +10,17 @@ class GlobalCacheIR extends IPSModule
         $this->RequireParent("{3CFF0FD9-E306-41DB-9B5A-9D06D38576C3}");
         
         $this->RegisterPropertyBoolean ("log", false );
-		
+		$this->RegisterPropertyString ("port", "1:1" );
     }
 
     public function ApplyChanges()
     {
         parent::ApplyChanges();
-    
-//		$this->RegisterVariableString("Buffer", "Buffer");	
+		$this->RegisterVariableString("SenderId", "SenderId");			
 //		$this->RegisterVariableString("LastCommand", "LastCommand");
 
-//		IPS_SetHidden($this->GetIDForIdent('Buffer'), true);
-//        IPS_SetHidden($this->GetIDForIdent('LastCommand'), true);    
+		IPS_SetHidden($this->GetIDForIdent('SenderId'), true);
+//      IPS_SetHidden($this->GetIDForIdent('LastCommand'), true);    nd'), true);    
     }
     
 
@@ -41,7 +40,7 @@ class GlobalCacheIR extends IPSModule
 			$vIdent = preg_replace("/[^a-zA-Z0-9]+/", "", $Command);
 			$vId = @IPS_GetObjectIDByIdent($vIdent, $cId);
 			if($vId !== false) {
-				$buffer = GetValueString($vId);
+				$buffer = ""GetValueString($vId);
 				$this->SendDataToParent(json_encode(Array("DataID" => "{79827379-F36E-4ADA-8A95-5F8D1DC92FA9}", "Buffer" => $buffer)));
 				return true;
 			}
