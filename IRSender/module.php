@@ -33,7 +33,7 @@ class GlobalCacheIR extends IPSModule
 		return true;
     }
 	
-	public function SendCode($Device, $Command) {
+	public function SendCommand($Device, $Command) {
 		$cIdent = preg_replace("/[^a-zA-Z0-9]+/", "", $Device);
 		$cId = @IPS_GetObjectIDByIdent($cIdent, $this->InstanceID);
 		
