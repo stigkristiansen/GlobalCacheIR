@@ -29,6 +29,7 @@ class GlobalCacheIR extends IPSModule
 	
 	    $incomingData = json_decode($JSONString);
 		$incomingBuffer = utf8_decode($incomingData->Buffer);
+		IPS_LogMessage("Global Cache", "Incoming: ".$incomingBuffer);
 		
 		return true;
     }
@@ -61,6 +62,7 @@ class GlobalCacheIR extends IPSModule
 			IPS_SetParent($cId, $this->InstanceID);
 			IPS_SetName($cId, $Device);
 			IPS_SetIdent($cId, $ident);
+			IPS_SetHidden($cId, true);
 		}
 
 		return $cId;
@@ -90,6 +92,7 @@ class GlobalCacheIR extends IPSModule
 				IPS_SetParent($vId, $cId);
 				IPS_SetName($vId, $Command);
 				IPS_SetIdent($vId, $ident);
+				IPS_SetHidden($vId, true);
 			}
 			
 			if($vId>0) {
