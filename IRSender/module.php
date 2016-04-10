@@ -11,7 +11,8 @@ class GlobalCacheIR extends IPSModule
         
         $this->RegisterPropertyBoolean ("log", false );
 		$this->RegisterPropertyString ("port", "1:1" );
-    }
+    
+	}
 
     public function ApplyChanges()
     {
