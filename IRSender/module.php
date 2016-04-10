@@ -17,20 +17,14 @@ class GlobalCacheIR extends IPSModule
     public function ApplyChanges()
     {
         parent::ApplyChanges();
-		$this->RegisterVariableString("SenderId", "SenderId");			
-//		$this->RegisterVariableString("LastCommand", "LastCommand");
-
-		IPS_SetHidden($this->GetIDForIdent('SenderId'), true);
-//      IPS_SetHidden($this->GetIDForIdent('LastCommand'), true);    nd'), true);    
+		
+		$this->RegisterVariableString("LastCommand", "LastCommand");
+		IPS_SetHidden($this->GetIDForIdent('LastCommand'), true);    
     }
     
 
     public function ReceiveData($JSONString) {
 	
-	    $incomingData = json_decode($JSONString);
-		$incomingBuffer = utf8_decode($incomingData->Buffer);
-		IPS_LogMessage("Global Cache", "Incoming: ".$incomingBuffer);
-		
 		return true;
     }
 	
