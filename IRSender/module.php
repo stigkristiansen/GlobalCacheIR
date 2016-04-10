@@ -43,7 +43,7 @@ class GlobalCacheIR extends IPSModule
 			$vId = @IPS_GetObjectIDByIdent($vIdent, $cId);
 			if($vId !== false) {
 				$log->LogMessage("Sending command: ".$Device.":".$Command);
-				$buffer = "sendir,".$this->ReadPropertyString("port").",".IPS_GetParent($cId).",".GetValueString($vId);
+				$buffer = "sendir,".$this->ReadPropertyString("port").",".IPS_GetParent($cId).",".GetValueString($vId).chr(13).chr(10);
 				$this->SendDataToParent(json_encode(Array("DataID" => "{79827379-F36E-4ADA-8A95-5F8D1DC92FA9}", "Buffer" => $buffer)));
 				return true;
 			} 
