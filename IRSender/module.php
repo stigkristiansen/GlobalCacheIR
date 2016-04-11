@@ -31,7 +31,7 @@ class GlobalCacheIR extends IPSModule
     }
 	
 	public function SendCommand($Device, $Command) {
-		if(!EvaluateParent)
+		if(!EvaluateParent())
 			return false;
 		
 		$cIdent = preg_replace("/[^a-zA-Z0-9]+/", "", $Device);
