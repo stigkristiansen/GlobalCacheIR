@@ -200,11 +200,20 @@ class GlobalCacheIR extends IPSModule
 		$log->LogMessage("Buffer is unlocked");
     }
 	
+	private function HasActiveParent(){
+        $instance = IPS_GetInstance($this->InstanceID);
+        if ($instance['ConnectionID'] > 0){
+            $parent = IPS_GetInstance($instance['ConnectionID']);
+            if ($parent['InstanceStatus'] == 102)
+                return true;
+        }
+        return false;
+    }
+	
 	private function EvaluateParent() {
     	$log = new Logging($this->ReadPropertyBoolean("log"), IPS_Getname($this->InstanceID));
 		
-		$hasParent = $this->HasActiveParent();
-		if($hasParent) {
+		if($this->HasActiveParent()) {
             $instance = IPS_GetInstance($this->InstanceID);
             $parentGUID = IPS_GetInstance($instance['ConnectionID'])['ModuleInfo']['ModuleID'];
             if ($parentGUID == '{3CFF0FD9-E306-41DB-9B5A-9D06D38576C3}') {
