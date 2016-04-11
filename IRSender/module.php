@@ -101,7 +101,7 @@ class GlobalCacheIR extends IPSModule
 				try {
 					IPS_DeleteCategory($cId);
 				} catch (Exeption $ex) {
-					$log->LogMessage("Failed to unregister the device ".$Device" . Error: ".$ex->getMessage());
+					$log->LogMessage("Failed to unregister the device ".$Device." . Error: ".$ex->getMessage());
 					return false;
 				}
 				
