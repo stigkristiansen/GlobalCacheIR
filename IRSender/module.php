@@ -15,12 +15,10 @@ class GlobalCacheIR extends IPSModule
     
 	}
 
-    public function ApplyChanges()
-    {
+    public function ApplyChanges(){
         parent::ApplyChanges();
 		
     }
-    
 
     public function ReceiveData($JSONString) {
 		$incomingData = json_decode($JSONString);
@@ -33,6 +31,9 @@ class GlobalCacheIR extends IPSModule
     }
 	
 	public function SendCommand($Device, $Command) {
+		if(!EvaluateParent)
+			return false;
+		
 		$cIdent = preg_replace("/[^a-zA-Z0-9]+/", "", $Device);
 		$cId = @IPS_GetObjectIDByIdent($cIdent, $this->InstanceID);
 	
@@ -44,7 +45,13 @@ class GlobalCacheIR extends IPSModule
 			if($vId !== false) {
 				$log->LogMessage("Sending command: ".$Device.":".$Command);
 				$buffer = "sendir,".$this->ReadPropertyString("port").",".IPS_GetParent($cId).",".GetValueString($vId).chr(13).chr(10);
-				$this->SendDataToParent(json_encode(Array("DataID" => "{79827379-F36E-4ADA-8A95-5F8D1DC92FA9}", "Buffer" => $buffer)));
+				try{
+					$this->SendDataToParent(json_encode(Array("DataID" => "{79827379-F36E-4ADA-8A95-5F8D1DC92FA9}", "Buffer" => $buffer)));
+				} catch (Exeption $ex) {
+					$log->LogMessage("Failed to cend the command ".$Device.":".$Command." . Error: ".$ex->getMessage());
+					return false;
+				}
+				
 				return true;
 			} 
 			$log->LogMessage("The command is not registered: ".$Device.":".$Command);
@@ -64,17 +71,18 @@ class GlobalCacheIR extends IPSModule
 		if($cId === false) {
 			try {
 				$cId = IPS_CreateCategory();
-				IPS_SetParent($cId, $this->InstanceID);
-				IPS_SetName($cId, $Device);
-				IPS_SetIdent($cId, $ident);
-				IPS_SetHidden($cId, true);
-				
-				$log->LogMessage("The device has been registered: ". $Device);
-				return $cId;
-			} catch (Exception $e){
-				$log->LogMessage("Failed to create the device ".$Device." . Error: ".$e->getMessage());
+			} catch (Exception $ex){
+				$log->LogMessage("Failed to register the device ".$Device." . Error: ".$ex->getMessage());
 				return false;
 			}
+			
+			IPS_SetParent($cId, $this->InstanceID);
+			IPS_SetName($cId, $Device);
+			IPS_SetIdent($cId, $ident);
+			IPS_SetHidden($cId, true);
+			
+			$log->LogMessage("The device has been registered: ". $Device);
+			return $cId;
 		}
 		
 		$log->LogMessage("The device already exists: ". $Device);
@@ -90,7 +98,13 @@ class GlobalCacheIR extends IPSModule
 		$cId = @IPS_GetObjectIDByIdent($ident, $this->InstanceID);
 		if($cId !== false) {
 			if(!IPS_HasChildren($cId)) {
-				IPS_DeleteCategory($cId);
+				try {
+					IPS_DeleteCategory($cId);
+				} catch (Exeption $ex) {
+					$log->LogMessage("Failed to unregister the device ".$Device" . Error: ".$ex->getMessage());
+					return false;
+				}
+				
 				$log->LogMessage("Unregistered the device: ".$Device);
 				return true;
 			}
@@ -111,7 +125,12 @@ class GlobalCacheIR extends IPSModule
 			$ident = preg_replace("/[^a-zA-Z0-9]+/", "", $Command);
 			$vId = @IPS_GetObjectIDByIdent($ident, $cId);
 			if($vId === false) {
-				$vId = IPS_CreateVariable(3); // Create String variable
+				try{
+					$vId = IPS_CreateVariable(3); // Create String variable
+				} catch (Exeption $ex) {
+					$log->LogMessage("Failed to register the command ".$Device.":".$Command." Error: ".$ex->getMessage());
+					return false;
+				}
 				IPS_SetParent($vId, $cId);
 				IPS_SetName($vId, $Command);
 				IPS_SetIdent($vId, $ident);
@@ -138,7 +157,12 @@ class GlobalCacheIR extends IPSModule
 			$vIdent = preg_replace("/[^a-zA-Z0-9]+/", "", $Command);
 			$vId = @IPS_GetObjectIDByIdent($vIdent, $cId);
 			if($vId !== false) {
-				IPS_DeleteVariable($vId);
+				try{
+					IPS_DeleteVariable($vId);
+				} catch (Exeption $ex) {
+					$log->LogMessage("Failed to unregister the command ".$Device.":".$Command." Error: ".$ex->getMessage());
+					return false;
+				}
 				
 				$log->LogMessage("The command has been unregistered: ".$Device.":".$Command);
 				return true;
@@ -176,6 +200,23 @@ class GlobalCacheIR extends IPSModule
 		$log->LogMessage("Buffer is unlocked");
     }
 	
+	private function EvaluateParent() {
+    	$log = new Logging($this->ReadPropertyBoolean("log"), IPS_Getname($this->InstanceID));
+		
+		$hasParent = $this->HasActiveParent();
+		if($hasParent) {
+            $instance = IPS_GetInstance($this->InstanceID);
+            $parentGUID = IPS_GetInstance($instance['ConnectionID'])['ModuleInfo']['ModuleID'];
+            if ($parentGUID == '{3CFF0FD9-E306-41DB-9B5A-9D06D38576C3}') {
+				$log->LogMessage("The parent I/O port is active and supported");
+				return true;
+			} else
+				$log->LogMessage("The parent I/O port is not supported");
+		} else
+			$log->LogMessage("The parent I/O port is not active.");
+		
+		return false;
+	}
 }
 
 ?>
