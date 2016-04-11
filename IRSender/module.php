@@ -62,14 +62,19 @@ class GlobalCacheIR extends IPSModule
 		
 		$cId = @IPS_GetObjectIDByIdent($ident, $this->InstanceID);
 		if($cId === false) {
-			$cId = IPS_CreateCategory();
-			IPS_SetParent($cId, $this->InstanceID);
-			IPS_SetName($cId, $Device);
-			IPS_SetIdent($cId, $ident);
-			IPS_SetHidden($cId, true);
-			
-			$log->LogMessage("The device has been registered: ". $Device);
-			return $cId;
+			try {
+				$cId = IPS_CreateCategory();
+				IPS_SetParent($cId, $this->InstanceID);
+				IPS_SetName($cId, $Device);
+				IPS_SetIdent($cId, $ident);
+				IPS_SetHidden($cId, true);
+				
+				$log->LogMessage("The device has been registered: ". $Device);
+				return $cId;
+			} catch (Exception $e){
+				$log->LogMessage("Failed to create the device ".$Device." . Error: ".$e->getMessage());
+				return false;
+			}
 		}
 		
 		$log->LogMessage("The device already exists: ". $Device);
