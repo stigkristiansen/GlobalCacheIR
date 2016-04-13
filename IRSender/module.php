@@ -48,7 +48,7 @@ class GlobalCacheIR extends IPSModule
 				try{
 					$this->SendDataToParent(json_encode(Array("DataID" => "{79827379-F36E-4ADA-8A95-5F8D1DC92FA9}", "Buffer" => $buffer)));
 				} catch (Exeption $ex) {
-					$log->LogMessage("Failed to cend the command ".$Device.":".$Command." . Error: ".$ex->getMessage());
+					$log->LogMessageError("Failed to cend the command ".$Device.":".$Command." . Error: ".$ex->getMessage());
 					return false;
 				}
 				
@@ -72,7 +72,7 @@ class GlobalCacheIR extends IPSModule
 			try {
 				$cId = IPS_CreateCategory();
 			} catch (Exception $ex){
-				$log->LogMessage("Failed to register the device ".$Device." . Error: ".$ex->getMessage());
+				$log->LogMessageError("Failed to register the device ".$Device." . Error: ".$ex->getMessage());
 				return false;
 			}
 			
@@ -101,7 +101,7 @@ class GlobalCacheIR extends IPSModule
 				try {
 					IPS_DeleteCategory($cId);
 				} catch (Exeption $ex) {
-					$log->LogMessage("Failed to unregister the device ".$Device." . Error: ".$ex->getMessage());
+					$log->LogMessageError("Failed to unregister the device ".$Device." . Error: ".$ex->getMessage());
 					return false;
 				}
 				
@@ -128,7 +128,7 @@ class GlobalCacheIR extends IPSModule
 				try{
 					$vId = IPS_CreateVariable(3); // Create String variable
 				} catch (Exeption $ex) {
-					$log->LogMessage("Failed to register the command ".$Device.":".$Command." Error: ".$ex->getMessage());
+					$log->LogMessageError("Failed to register the command ".$Device.":".$Command." Error: ".$ex->getMessage());
 					return false;
 				}
 				IPS_SetParent($vId, $cId);
@@ -160,7 +160,7 @@ class GlobalCacheIR extends IPSModule
 				try{
 					IPS_DeleteVariable($vId);
 				} catch (Exeption $ex) {
-					$log->LogMessage("Failed to unregister the command ".$Device.":".$Command." Error: ".$ex->getMessage());
+					$log->LogMessageError("Failed to unregister the command ".$Device.":".$Command." Error: ".$ex->getMessage());
 					return false;
 				}
 				
@@ -186,7 +186,8 @@ class GlobalCacheIR extends IPSModule
             else
             {
                 $log = new Logging($this->ReadPropertyBoolean("log"), IPS_Getname($this->InstanceID));
-				$log->LogMessage("Waiting for lock");
+				if($i==0)
+				    $log->LogMessage("Waiting for lock...");
 				IPS_Sleep(mt_rand(1, 5));
             }
         }
@@ -217,12 +218,12 @@ class GlobalCacheIR extends IPSModule
             $instance = IPS_GetInstance($this->InstanceID);
             $parentGUID = IPS_GetInstance($instance['ConnectionID'])['ModuleInfo']['ModuleID'];
             if ($parentGUID == '{3CFF0FD9-E306-41DB-9B5A-9D06D38576C3}') {
-				$log->LogMessage("The parent I/O port is active and supported");
+				$log->LogMessageError("The parent I/O port is active and supported");
 				return true;
 			} else
-				$log->LogMessage("The parent I/O port is not supported");
+				$log->LogMessageError("The parent I/O port is not supported");
 		} else
-			$log->LogMessage("The parent I/O port is not active.");
+			$log->LogMessageError("The parent I/O port is not active.");
 		
 		return false;
 	}
