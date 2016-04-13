@@ -17,6 +17,9 @@ class GlobalCacheIR extends IPSModule
 
     public function ApplyChanges(){
         parent::ApplyChanges();
+        
+        $this->RegisterVariableString("LastSendt", "LastSendt");
+        $this->RegisterVariableString("LastReceived", "LastReceived");
 		
     }
 
