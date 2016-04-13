@@ -34,14 +34,11 @@ class GlobalCacheIR extends IPSModule
 		$log->LogMessage("Received: ".$incomingBuffer);
 		
 		if ($this->Lock("LastReceivedLock")) { 
-             	    $log->LogMessage("LastReceived is locked. Updating value..."); 
-             	    
              	    $Id = $this->GetIDForIdent("LastReceived");
 		    SetValueString($Id, $incomingBuffer);
 		    
 		    $this->Unlock("LastReceivedLock");    
-	         } else 
- 		    $log->LogMessage("LastReceived is already locked. Aborting value update!"); 
+	         } 
 
 		return true;
     }
@@ -65,14 +62,12 @@ class GlobalCacheIR extends IPSModule
 					$this->SendDataToParent(json_encode(Array("DataID" => "{79827379-F36E-4ADA-8A95-5F8D1DC92FA9}", "Buffer" => $buffer)));
 				
 					if ($this->Lock("LastSendtLock")) { 
-				            $log->LogMessage("LastSendt is locked. Updating value"); 
-					
 					    $Id = $this->GetIDForIdent("LastSendt");
 					    SetValueString($Id, $buffer);
 					
 					    $this->Unlock("LastSendtLock"); 
-				         } else
-				            $log->LogMessage("LastSendt is already locked. Aborting variable update!"); 
+				         } 
+				            
 				} catch (Exeption $ex) {
 					$log->LogMessageError("Failed to send the command ".$Device.":".$Command." . Error: ".$ex->getMessage());
 					
@@ -204,20 +199,24 @@ class GlobalCacheIR extends IPSModule
 	}
 
 	    private function Lock($ident)   {
+	    	$log = new Logging($this->ReadPropertyBoolean("log"), IPS_Getname($this->InstanceID));
         for ($i = 0; $i < 100; $i++)
         {
             if (IPS_SemaphoreEnter("GCIR_" . (string) $this->InstanceID . (string) $ident, 1))
             {
+            	$log->LogMessage($ident." is locked"); 
                 return true;
             }
             else
             {
-                $log = new Logging($this->ReadPropertyBoolean("log"), IPS_Getname($this->InstanceID));
+                
 				if($i==0)
 				    $log->LogMessage("Waiting for lock...");
 				IPS_Sleep(mt_rand(1, 5));
             }
         }
+        
+        $log->LogMessage($ident." is already locked"); 
         return false;
     }
 
@@ -225,7 +224,7 @@ class GlobalCacheIR extends IPSModule
     {
         IPS_SemaphoreLeave("GCIR_" . (string) $this->InstanceID . (string) $ident);
 		$log = new Logging($this->ReadPropertyBoolean("log"), IPS_Getname($this->InstanceID));
-		$log->LogMessage("Buffer is unlocked");
+		$log->LogMessage($ident." is unlocked");
     }
 	
 	private function HasActiveParent(){
