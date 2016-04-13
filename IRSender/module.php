@@ -20,6 +20,9 @@ class GlobalCacheIR extends IPSModule
         
         $this->RegisterVariableString("LastSendt", "LastSendt");
         $this->RegisterVariableString("LastReceived", "LastReceived");
+        
+        IPS_SetHidden($this->GetIDForIdent('LastSendt'), true);
+        IPS_SetHidden($this->GetIDForIdent('LastReceived'), true);
 		
     }
 
@@ -29,7 +32,17 @@ class GlobalCacheIR extends IPSModule
 		
 		$log = new Logging($this->ReadPropertyBoolean("log"), IPS_Getname($this->InstanceID));
 		$log->LogMessage("Received: ".$incomingBuffer);
+		
+		if (!$this->Lock("ReceiveLock")) { 
+             	    $log->LogMessage("LastReceived is already locked. Aborting message handling!"); 
+             	    return false;  
+	         } else 
+ 		    $log->LogMessage("ReceiveLock is locked"); 
 
+		$Id = $this->GetIDForIdent("LastReceived");
+		SetValueString($Id, $incomingBuffer);
+		$this->Unlock("ReceiveLock);
+		
 		return true;
     }
 	
@@ -41,7 +54,7 @@ class GlobalCacheIR extends IPSModule
 		$cId = @IPS_GetObjectIDByIdent($cIdent, $this->InstanceID);
 	
 		$log = new Logging($this->ReadPropertyBoolean("log"), IPS_Getname($this->InstanceID));
-	
+		
 		if($cId !== false) {
 			$vIdent = preg_replace("/[^a-zA-Z0-9]+/", "", $Command);
 			$vId = @IPS_GetObjectIDByIdent($vIdent, $cId);
@@ -50,8 +63,19 @@ class GlobalCacheIR extends IPSModule
 				$buffer = "sendir,".$this->ReadPropertyString("port").",".IPS_GetParent($cId).",".GetValueString($vId).chr(13).chr(10);
 				try{
 					$this->SendDataToParent(json_encode(Array("DataID" => "{79827379-F36E-4ADA-8A95-5F8D1DC92FA9}", "Buffer" => $buffer)));
+				
+					if ($this->Lock("LastSendt")) { 
+				            $log->LogMessage("LastSendt is locked"); 
+					
+					    $Id = $this->GetIDForIdent("LastSendt");
+					    SetValueString($Id, $buffer);
+					
+					    $this->Unlock("LastSendt"); 
+				         } else
+				            $log->LogMessage("LastSendt is already locked. Aborting variable update!"); 
 				} catch (Exeption $ex) {
-					$log->LogMessageError("Failed to cend the command ".$Device.":".$Command." . Error: ".$ex->getMessage());
+					$log->LogMessageError("Failed to send the command ".$Device.":".$Command." . Error: ".$ex->getMessage());
+					
 					return false;
 				}
 				
