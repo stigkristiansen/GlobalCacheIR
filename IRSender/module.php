@@ -218,7 +218,7 @@ class GlobalCacheIR extends IPSModule
             $instance = IPS_GetInstance($this->InstanceID);
             $parentGUID = IPS_GetInstance($instance['ConnectionID'])['ModuleInfo']['ModuleID'];
             if ($parentGUID == '{3CFF0FD9-E306-41DB-9B5A-9D06D38576C3}') {
-				$log->LogMessageError("The parent I/O port is active and supported");
+				$log->LogMessage("The parent I/O port is active and supported");
 				return true;
 			} else
 				$log->LogMessageError("The parent I/O port is not supported");
