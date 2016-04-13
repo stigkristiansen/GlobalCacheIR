@@ -37,7 +37,8 @@ class GlobalCacheIR extends IPSModule
              	    $Id = $this->GetIDForIdent("LastReceived");
 		    SetValueString($Id, $incomingBuffer);
 		    
-		    $this->Unlock("LastReceivedLock");    
+		    $this->Unlock("LastReceivedLock"); 
+		    $log->LogMessage("Updated variable LastReceived");
 	         } 
 
 		return true;
@@ -66,6 +67,7 @@ class GlobalCacheIR extends IPSModule
 					    SetValueString($Id, $buffer);
 					
 					    $this->Unlock("LastSendtLock"); 
+					    $log->LogMessage("Updated variable LastSendt");
 				         } 
 				            
 				} catch (Exeption $ex) {
