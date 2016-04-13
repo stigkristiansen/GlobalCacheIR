@@ -33,13 +33,13 @@ class GlobalCacheIR extends IPSModule
 		$log = new Logging($this->ReadPropertyBoolean("log"), IPS_Getname($this->InstanceID));
 		$log->LogMessage("Received: ".$incomingBuffer);
 		
-		if ($this->Lock("ReceiveLock")) { 
+		if ($this->Lock("LastReceivedLock")) { 
              	    $log->LogMessage("LastReceived is locked. Updating value..."); 
              	    
              	    $Id = $this->GetIDForIdent("LastReceived");
 		    SetValueString($Id, $incomingBuffer);
 		    
-		    $this->Unlock("ReceiveLock);    
+		    $this->Unlock("LastReceivedLock");    
 	         } else 
  		    $log->LogMessage("LastReceived is already locked. Aborting value update!"); 
 
@@ -64,13 +64,13 @@ class GlobalCacheIR extends IPSModule
 				try{
 					$this->SendDataToParent(json_encode(Array("DataID" => "{79827379-F36E-4ADA-8A95-5F8D1DC92FA9}", "Buffer" => $buffer)));
 				
-					if ($this->Lock("LastSendt")) { 
+					if ($this->Lock("LastSendtLock")) { 
 				            $log->LogMessage("LastSendt is locked. Updating value"); 
 					
 					    $Id = $this->GetIDForIdent("LastSendt");
 					    SetValueString($Id, $buffer);
 					
-					    $this->Unlock("LastSendt"); 
+					    $this->Unlock("LastSendtLock"); 
 				         } else
 				            $log->LogMessage("LastSendt is already locked. Aborting variable update!"); 
 				} catch (Exeption $ex) {
