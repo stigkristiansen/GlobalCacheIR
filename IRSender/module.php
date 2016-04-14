@@ -23,7 +23,6 @@ class GlobalCacheIR extends IPSModule
         
         IPS_SetHidden($this->GetIDForIdent('LastSendt'), true);
         IPS_SetHidden($this->GetIDForIdent('LastReceived'), true);
-		
     }
 
     public function ReceiveData($JSONString) {
@@ -39,7 +38,7 @@ class GlobalCacheIR extends IPSModule
 		    $log->LogMessage("Updated variable LastReceived");
 		    $this->Unlock("LastReceivedLock"); 
 		    
-	         } 
+        } 
 
 		return true;
     }
@@ -67,8 +66,7 @@ class GlobalCacheIR extends IPSModule
 					    SetValueString($Id, $buffer);
 					    $log->LogMessage("Updated variable LastSendt");
 					    $this->Unlock("LastSendtLock"); 
-					    
-				         } 
+					} 
 				            
 				} catch (Exeption $ex) {
 					$log->LogMessageError("Failed to send the command ".$Device.":".$Command." . Error: ".$ex->getMessage());
@@ -111,7 +109,6 @@ class GlobalCacheIR extends IPSModule
 		
 		$log->LogMessage("The device already exists: ". $Device);
 		return $cId;
-		
 	}
 	
 	public function UnregisterDevice($Device) {
@@ -200,23 +197,18 @@ class GlobalCacheIR extends IPSModule
 		return false;
 	}
 
-	    private function Lock($ident)   {
-	    	$log = new Logging($this->ReadPropertyBoolean("log"), IPS_Getname($this->InstanceID));
-        for ($i = 0; $i < 100; $i++)
-        {
-            if (IPS_SemaphoreEnter("GCIR_" . (string) $this->InstanceID . (string) $ident, 1))
-            {
-            	$log->LogMessage($ident." is locked"); 
-                return true;
-            }
-            else
-            {
-                
+	private function Lock($ident){
+		$log = new Logging($this->ReadPropertyBoolean("log"), IPS_Getname($this->InstanceID));
+		for ($i = 0; $i < 100; $i++){
+			if (IPS_SemaphoreEnter("GCIR_" . (string) $this->InstanceID . (string) $ident, 1)){
+				$log->LogMessage($ident." is locked"); 
+				return true;
+			} else {
 				if($i==0)
-				    $log->LogMessage("Waiting for lock...");
+					$log->LogMessage("Waiting for lock...");
 				IPS_Sleep(mt_rand(1, 5));
-            }
-        }
+			}
+		}
         
         $log->LogMessage($ident." is already locked"); 
         return false;
