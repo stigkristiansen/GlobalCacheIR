@@ -47,13 +47,13 @@ class GlobalCacheIR extends IPSModule
 		if(!$this->EvaluateParent())
 			return false;
 		
-		$cIdent = preg_replace("/[^a-zA-Z0-9]+/", "", $Device);
+		$cIdent = strtolower(preg_replace("/[^a-zA-Z0-9]+/", "", $Device));
 		$cId = @IPS_GetObjectIDByIdent($cIdent, $this->InstanceID);
 	
 		$log = new Logging($this->ReadPropertyBoolean("log"), IPS_Getname($this->InstanceID));
 		
 		if($cId !== false) {
-			$vIdent = preg_replace("/[^a-zA-Z0-9]+/", "", $Command);
+			$vIdent = strtolower(preg_replace("/[^a-zA-Z0-9]+/", "", $Command));
 			$vId = @IPS_GetObjectIDByIdent($vIdent, $cId);
 			if($vId !== false) {
 				$log->LogMessage("Sending command: ".$Device.":".$Command);
@@ -85,7 +85,7 @@ class GlobalCacheIR extends IPSModule
 	}
     
 	public function RegisterDevice($Device) {
-		$ident = preg_replace("/[^a-zA-Z0-9]+/", "", $Device);
+		$ident = strtolower(preg_replace("/[^a-zA-Z0-9]+/", "", $Device));
 
 		$log = new Logging($this->ReadPropertyBoolean("log"), IPS_Getname($this->InstanceID));
 		
@@ -112,7 +112,7 @@ class GlobalCacheIR extends IPSModule
 	}
 	
 	public function UnregisterDevice($Device) {
-		$ident = preg_replace("/[^a-zA-Z0-9]+/", "", $Device);
+		$ident = strtolower(preg_replace("/[^a-zA-Z0-9]+/", "", $Device));
 		
 		$log = new Logging($this->ReadPropertyBoolean("log"), IPS_Getname($this->InstanceID));
 		
@@ -143,7 +143,7 @@ class GlobalCacheIR extends IPSModule
 		$log = new Logging($this->ReadPropertyBoolean("log"), IPS_Getname($this->InstanceID));		
 				
 		if($cId>0) {
-			$ident = preg_replace("/[^a-zA-Z0-9]+/", "", $Command);
+			$ident = strtolower(preg_replace("/[^a-zA-Z0-9]+/", "", $Command));
 			$vId = @IPS_GetObjectIDByIdent($ident, $cId);
 			if($vId === false) {
 				try{
@@ -169,13 +169,13 @@ class GlobalCacheIR extends IPSModule
 	}
 	
 	public function UnregisterCommand($Device, $Command) {
-		$cIdent = preg_replace("/[^a-zA-Z0-9]+/", "", $Device);
+		$cIdent = strtolower(preg_replace("/[^a-zA-Z0-9]+/", "", $Device));
 
 		$log = new Logging($this->ReadPropertyBoolean("log"), IPS_Getname($this->InstanceID));
 		
 		$cId = @IPS_GetObjectIDByIdent($cIdent, $this->InstanceID);
 		if($cId !== false) {
-			$vIdent = preg_replace("/[^a-zA-Z0-9]+/", "", $Command);
+			$vIdent = strtolower(preg_replace("/[^a-zA-Z0-9]+/", "", $Command));
 			$vId = @IPS_GetObjectIDByIdent($vIdent, $cId);
 			if($vId !== false) {
 				try{
