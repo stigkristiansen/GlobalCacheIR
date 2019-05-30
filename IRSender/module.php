@@ -221,7 +221,7 @@ class GlobalCacheIR extends IPSModule
 		$log->LogMessage($ident." is unlocked");
     }
 	
-	private function HasActiveParent(){
+/*	private function HasActiveParent(){
         $instance = IPS_GetInstance($this->InstanceID);
         if ($instance['ConnectionID'] > 0){
             $parent = IPS_GetInstance($instance['ConnectionID']);
@@ -230,7 +230,7 @@ class GlobalCacheIR extends IPSModule
         }
         return false;
     }
-	
+*/	
 	private function EvaluateParent() {
     	$log = new Logging($this->ReadPropertyBoolean("log"), IPS_Getname($this->InstanceID));
 		
